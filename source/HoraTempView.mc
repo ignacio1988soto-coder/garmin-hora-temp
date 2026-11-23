@@ -1,14 +1,14 @@
-import Toybox.Graphics;
-import Toybox.Lang;
-import Toybox.System;
-import Toybox.WatchUi;
-import Toybox.Weather;
+using Toybox.Graphics;
+using Toybox.Lang;
+using Toybox.System;
+using Toybox.WatchUi;
+using Toybox.SensorHistory;
 
 class HoraTempView extends WatchUi.WatchFace {
     function initialize() {
         WatchFace.initialize();
     }
-    function onUpdate(dc as Dc) as Void {
+    function onUpdate(dc) {
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
         dc.clear();
 
@@ -18,10 +18,13 @@ class HoraTempView extends WatchUi.WatchFace {
             clockTime.min.format("%02d")
         ]);
 
-        var tempTexto = "-- °C";
-        var condiciones = Weather.getCurrentConditions();
-        if (condiciones != null && condiciones.temperature != null) {
-            tempTexto = condiciones.temperature.format("%d") + " °C";
+        var tempTexto = "-- C";
+        if ((Toybox has :SensorHistory) && (SensorHistory has :getTemperatureHistory)) {
+            var tempIter = SensorHistory.getTemperatureHistory({:period => 1});
+            var sample = tempIter.next();
+            if (sample != null && sample.data != null) {
+                tempTexto = sample.data.format("%d") + " C";
+            }
         }
 
         var ancho = dc.getWidth();

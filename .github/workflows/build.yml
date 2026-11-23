@@ -23,7 +23,7 @@ jobs:
       - name: Compilar para epix Pro 47mm
         run: |
           mkdir -p bin
-          monkeyc -f monkey.jungle -o bin/HoraTemp.prg -y developer_key.der -d epix2 -w
+          monkeyc -f monkey.jungle -o bin/HoraTemp.prg -y developer_key.der -d venu -w
 
       - name: Guardar archivo compilado
         uses: actions/upload-artifact@v4
