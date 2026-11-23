@@ -7,13 +7,16 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container:
-      image: kalemena/connectiq:latest
-      options: --user root
+    runs-on: ubuntu-22.04
     steps:
       - name: Descargar codigo
         uses: actions/checkout@v4
+
+      - name: Instalar entorno Connect IQ moderno
+        uses: lindell/connect-iq-action@v1
+        with:
+          sdk-version: '7.4.3'
+          devices: 'epix2pro47mm'
 
       - name: Generar clave de desarrollador
         run: |
@@ -23,7 +26,7 @@ jobs:
       - name: Compilar para epix Pro 47mm
         run: |
           mkdir -p bin
-          monkeyc -f monkey.jungle -o bin/HoraTemp.prg -y developer_key.der -d venu -w
+          monkeyc -f monkey.jungle -o bin/HoraTemp.prg -y developer_key.der -d epix2pro47mm -w
 
       - name: Guardar archivo compilado
         uses: actions/upload-artifact@v4
