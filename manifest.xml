@@ -2,7 +2,7 @@
 <iq:manifest xmlns:iq="http://garmin.com" version="3">
     <iq:application entry="HoraTempApp" id="a1b2c3d4e5f64789901234567890abcd" launcherIcon="@Drawables.LauncherIcon" minApiLevel="3.2.0" name="@Strings.AppName" type="watchface" version="1.0.0">
         <iq:products>
-            <iq:product id="epix2pro47mm"/>
+            <iq:product id="epix2"/>
         </iq:products>
         <iq:permissions>
             <iq:uses-permission id="Weather"/>
