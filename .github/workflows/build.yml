@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: kalemena/connectiq:latest
+      options: --user root
     steps:
       - name: Descargar codigo
         uses: actions/checkout@v4
