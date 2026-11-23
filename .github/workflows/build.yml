@@ -7,26 +7,39 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Descargar codigo
         uses: actions/checkout@v4
 
-      - name: Instalar entorno Connect IQ moderno
-        uses: lindell/connect-iq-action@v1
+      - name: Instalar Java
+        uses: actions/setup-java@v4
         with:
-          sdk-version: '7.4.3'
-          devices: 'epix2pro47mm'
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Generar clave de desarrollador
         run: |
           openssl genrsa -out developer_key.pem 4096
           openssl pkcs8 -topk8 -inform PEM -outform DER -in developer_key.pem -out developer_key.der -nocrypt
 
+      - name: Descargar SDK y dispositivo epix2pro47mm de Garmin
+        run: |
+          mkdir -p ~/.Garmin/ConnectIQ/Sdks/sdk ~/.Garmin/ConnectIQ/Devices/epix2pro47mm
+          SDK_URL=$(curl -s https://garmin.com | jq -r '.[-1].linux')
+          curl -fL "$SDK_URL" -o sdk.zip
+          unzip -q sdk.zip -d ~/.Garmin/ConnectIQ/Sdks/sdk
+          DEV_URL=$(curl -s https://garmin.com | jq -r '.[] | select(.partNumber=="epix2pro47mm") | .url // empty')
+          if [ -z "$DEV_URL" ]; then
+            DEV_URL="https://garmin.com"
+          fi
+          curl -fL "$DEV_URL" -o dev.zip
+          unzip -q dev.zip -d ~/.Garmin/ConnectIQ/Devices/epix2pro47mm
+
       - name: Compilar para epix Pro 47mm
         run: |
           mkdir -p bin
-          monkeyc -f monkey.jungle -o bin/HoraTemp.prg -y developer_key.der -d epix2pro47mm -w
+          ~/.Garmin/ConnectIQ/Sdks/sdk/bin/monkeyc -f monkey.jungle -o bin/HoraTemp.prg -y developer_key.der -d epix2pro47mm -w
 
       - name: Guardar archivo compilado
         uses: actions/upload-artifact@v4
